@@ -10,6 +10,11 @@ const UserControl = () => {
     {id: "2", name: "Dilnoza", email: "example@gmail.com", active: false, role: "Editor"},
     {id: "3", name: "Dilnoza", email: "example@gmail.com", active: false, role: "Editor"},
   ]);
+
+  const addNewUser = (newUser: IUser) => {
+    setUsers((prevState) => [...prevState, newUser]);
+  };
+
   return (
     <>
       <header>
@@ -17,10 +22,10 @@ const UserControl = () => {
       </header>
       <main className="container mt-4">
         <div className="row">
-          <div className="col-4 mb-2">
-            <UserForm/>
+          <div className="col-md-4">
+            <UserForm addNewUser={addNewUser}/>
           </div>
-          <div className="col-4 mb-2">
+          <div className="col-md-8">
             <Users users={users}/>
           </div>
         </div>

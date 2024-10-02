@@ -1,32 +1,62 @@
 import React, { useState } from 'react';
-import { IUserMutation } from '../../types';
+import { IUser, IUserMutation } from '../../types';
 
-const UserForm = () => {
+interface Props {
+  addNewUser: (newUser: IUser) => void;
+}
+
+const UserForm: React.FC<Props> = ({addNewUser}) => {
   const [newUser, setNewUser] = useState<IUserMutation>({
     name: "",
     email: "",
     active: false,
-    role:"",
+    role:"user",
   });
 
-  const [isActive, setIsActive] = useState(false);
-  const [role, setRole] = useState<'user' | 'editor' | 'admin'> ('user');
+  const [isActive, setIsActive] = useState<boolean>(false)
 
-  const changeUser = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setNewUser((prevState) => {
-      return {
-        ...prevState,
-        [e.target.name]: e.target.value,
-      };
-    });
+  const changeUser = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const {name, value} = e.target;
+
+    setNewUser((prevState) => ({
+      ...prevState,
+      [name]: value,
+    }));
   };
 
   const handleCheckbox = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setIsActive(e.target.checked)
+    const {checked} = e.target;
+    setIsActive(checked);
+    setNewUser((prevState) => ({
+      ...prevState,
+      active:checked,
+    }));
+  };
+
+
+  const onSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (newUser.name.trim().length === 0 && newUser.email.trim().length === 0) {
+      alert("Try again!");
+      return;
+    }
+
+    addNewUser({
+        id: String(new Date()),
+      ...newUser,
+      });
+
+    setNewUser({
+      name: "",
+      email: "",
+      active: false,
+      role:"user",
+    });
   };
 
   return (
-    <form>
+    <form onSubmit={onSubmit}>
       <h3>Create a new user</h3>
       <div className="form-group mb-4">
         <label htmlFor="name">User name:</label>
@@ -54,32 +84,36 @@ const UserForm = () => {
         />
       </div>
 
-      <div className="form-group mb-4">
-        <label htmlFor="btncheck1">active: </label>
+      <div className="form-group form-check mb-4">
         <input
           type="checkbox"
           onChange={handleCheckbox}
           className="form-check-input"
-          id="btncheck1"
-          checked={isActive}
-          autoComplete="off"/>
+          id="active"
+          name="active"
+          checked={isActive}/>
+        <label className="form-check-label" htmlFor="active">
+          Active
+        </label>
       </div>
 
       <div className="form-group mb-4">
         <select
           id="role"
-          value={role}
-          onChange={(e) => setRole(e.target.value as 'user' | 'editor' | 'admin')}
+          name="role"
+          value={newUser.role}
+          onChange={changeUser}
           className="form-select"
+          required
           aria-label="Default select example">
-          <option selected>Open this select menu to select the role</option>
+          <option selected>Select the role</option>
           <option value="user">User</option>
           <option value="editor">Editor</option>
           <option value="admin">Admin</option>
         </select>
       </div>
 
-      <button className="btn btn-primary">Create</button>
+      <button type="submit" className="btn btn-primary">Create</button>
 
     </form>
   );
