@@ -1,10 +1,9 @@
-import './App.css'
+import UserControl from './Containers/UserControl/UserControl.tsx';
+
 
 const App = () => {
-
   return (
-    <>
-    </>
+    <UserControl/>
   )
 };
 
